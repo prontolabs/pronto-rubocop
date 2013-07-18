@@ -10,11 +10,8 @@ module Pronto
     def run(diffs)
       return [] unless diffs && diffs.any?
 
-      working_dir = diffs.first.repo.working_dir
       diffs.map do |diff|
-        full_b_path = File.join(working_dir, diff.b_path)
-
-        @cli.inspect_file(full_b_path)
+        @cli.inspect_file(diff.full_b_path)
       end
     end
   end
