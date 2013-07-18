@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'grit-ext'
 
 module Pronto
   describe Rubocop do
@@ -15,6 +16,15 @@ module Pronto
       context 'no diffs' do
         let(:diffs) { [] }
         it { should == [] }
+      end
+
+      context 'pronto-rubocop repo itself' do
+        let(:path_to_repo) { File.join(File.dirname(__FILE__), '../../') }
+        let(:repo) { Grit::Repo.new(path_to_repo) }
+        let(:diffs) { repo.diff('504469e', 'f8d5f2c') }
+
+        its(:count) { should == 3 }
+        its(:'first.count') { should == 2 }
       end
     end
   end
