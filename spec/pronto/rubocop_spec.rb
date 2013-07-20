@@ -21,10 +21,10 @@ module Pronto
       context 'pronto-rubocop repo itself' do
         let(:path_to_repo) { File.join(File.dirname(__FILE__), '../../') }
         let(:repo) { Grit::Repo.new(path_to_repo) }
-        let(:diffs) { repo.diff('504469e', 'f8d5f2c') }
+        let(:diffs) { repo.diff('f8d5f2c', '504469e') }
 
         its(:count) { should == 3 }
-        its(:'first.count') { should == 2 }
+        its(:'first.count') { should == 1 }
       end
     end
   end
