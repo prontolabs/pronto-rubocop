@@ -2,7 +2,7 @@ require 'pronto'
 require 'rubocop'
 
 module Pronto
-  class Rubocop
+  class Rubocop < Runner
     def initialize
       @cli = ::Rubocop::CLI.new
     end
