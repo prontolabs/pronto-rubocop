@@ -25,6 +25,10 @@ module Pronto
 
         its(:count) { should == 3 }
         its(:'first.count') { should == 1 }
+        its(:'first.first.level') { should == :info }
+        its(:'first.first.msg') {
+          should == "Missing top-level class documentation comment."
+        }
       end
     end
   end
