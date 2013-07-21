@@ -17,7 +17,11 @@ module Pronto
     end
 
     def inspect(diff)
-      @cli.inspect_file(diff.full_b_path)
+      blob = diff.b_blob
+      file = Tempfile.new(blob.id)
+      file.write(blob.data)
+      file.close
+      @cli.inspect_file(file.path)
     end
 
     def messages_from(offences, diff)
