@@ -10,10 +10,8 @@ module Pronto
     def run(diffs)
       return [] unless diffs
 
-      diffs.map do |diff|
-        offences = inspect(diff)
-        messages_from(offences, diff)
-      end
+      diffs.select { |diff| diff.added.any? }
+           .map { |diff| inspect(diff) }
     end
 
     def inspect(diff)
@@ -21,7 +19,8 @@ module Pronto
       file = Tempfile.new(blob.id)
       file.write(blob.data)
       file.close
-      @cli.inspect_file(file.path)
+      offences = @cli.inspect_file(file.path)
+      messages_from(offences, diff)
     end
 
     def messages_from(offences, diff)
