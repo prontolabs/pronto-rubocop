@@ -15,7 +15,8 @@ module Pronto
     end
 
     def inspect(diff)
-      file = diff.b_blob.create_tempfile
+      blob = diff.b_blob
+      file = blob.create_tempfile
       offences = @cli.inspect_file(file.path)
       messages_from(offences, diff)
     end
@@ -26,12 +27,14 @@ module Pronto
           added_line.line_number == offence.line
         end.first
 
-        message_from(offence, line) if line
+        path = diff.b_path
+        message_from(path, offence, line) if line
       end.compact
     end
 
-    def message_from(offence, diff_line)
-      Pronto::Message.new(diff_line,
+    def message_from(path, offence, line)
+      Pronto::Message.new(path,
+                          line,
                           level(offence.severity),
                           offence.message)
     end
