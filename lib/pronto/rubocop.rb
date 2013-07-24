@@ -15,10 +15,12 @@ module Pronto
     end
 
     def inspect(diff)
-      blob = diff.b_blob
-      file = blob.create_tempfile
-      offences = @cli.inspect_file(file.path)
-      messages_from(offences, diff)
+      if File.extname(diff.b_path) == '.rb'
+        blob = diff.b_blob
+        file = blob.create_tempfile
+        offences = @cli.inspect_file(file.path)
+        messages_from(offences, diff)
+      end
     end
 
     def messages_from(offences, diff)
