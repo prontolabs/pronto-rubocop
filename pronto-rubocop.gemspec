@@ -7,14 +7,13 @@ Gem::Specification.new do |s|
   s.name        = 'pronto-rubocop'
   s.version     = Pronto::RubocopVersion::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ['Mindaugas Mozūras']
-  s.email       = ['mindaugas.mozuras@gmail.com']
+  s.author      = 'Mindaugas Mozūras'
+  s.email       = 'mindaugas.mozuras@gmail.com'
   s.homepage    = 'http://github.org/mmozuras/pronto-rubocop'
   s.summary     = 'pronto-rubocop'
   s.description = 'pronto-rubocop'
 
   s.required_rubygems_version = '>= 1.3.6'
-  s.rubyforge_project         = 'pronto-rubocop'
   s.license = 'MIT'
 
   s.files         = Dir.glob('{lib}/**/*') + %w[LICENSE README.md]
