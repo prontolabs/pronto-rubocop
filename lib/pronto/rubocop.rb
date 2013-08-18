@@ -12,6 +12,7 @@ module Pronto
 
       patches.select { |patch| patch.additions > 0 }
              .map { |patch| inspect(patch) }
+             .flatten.compact
     end
 
     def inspect(patch)
