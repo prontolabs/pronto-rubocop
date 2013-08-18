@@ -1,6 +1,5 @@
 require 'pronto'
 require 'rubocop'
-require 'tempfile'
 
 module Pronto
   class Rubocop < Runner
@@ -8,20 +7,18 @@ module Pronto
       @cli = ::Rubocop::CLI.new
     end
 
-    def run(diffs)
-      return [] unless diffs
+    def run(patches)
+      return [] unless patches
 
-      diffs.select { |patch| patch.additions > 0 }
-           .map { |patch| inspect(patch) }
+      patches.select { |patch| patch.additions > 0 }
+             .map { |patch| inspect(patch) }
     end
 
     def inspect(patch)
-      new_file = patch.delta.new_file
+      delta = patch.delta
 
-      if File.extname(new_file[:path]) == '.rb'
-        repo = patch.diff.instance_eval { @owner.instance_eval { @owner } }
-        blob = repo.lookup(new_file[:oid])
-        file = create_tempfile(blob)
+      if File.extname(delta.new_file[:path]) == '.rb'
+        file = create_tempfile(delta.new_blob)
         offences = @cli.inspect_file(file.path)
         messages_from(offences, patch)
       end
