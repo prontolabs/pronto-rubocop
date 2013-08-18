@@ -18,9 +18,10 @@ module Pronto
       delta = patch.delta
 
       if File.extname(delta.new_file[:path]) == '.rb'
-        file = create_tempfile(delta.new_blob)
-        offences = @cli.inspect_file(file.path)
-        messages_from(offences, patch)
+        create_tempfile(delta.new_blob) do |file|
+          offences = @cli.inspect_file(file.path)
+          messages_from(offences, patch)
+        end
       end
     end
 
