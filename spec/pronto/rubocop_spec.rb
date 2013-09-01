@@ -21,11 +21,10 @@ module Pronto
         let(:path_to_repo) { File.join(File.dirname(__FILE__), '../../') }
         let(:repo) { Rugged::Repository.new(path_to_repo) }
 
-        let(:patches) { repo.diff('f8d5f2c', '504469e') }
+        let(:patches) { repo.diff('f8d5f2c', repo.head.target) }
 
-        its(:count) { should == 2 }
+        its(:count) { should > 4 }
         its(:'first.level') { should == :info }
-        its(:'first.line.new_lineno') { should == 2 }
         its(:'first.msg') {
           should == 'Missing top-level class documentation comment.'
         }
