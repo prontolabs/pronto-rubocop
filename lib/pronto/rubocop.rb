@@ -24,15 +24,9 @@ module Pronto
       end
     end
 
-    def added_lines(patch)
-      patch.map do |hunk|
-        hunk.lines.select(&:addition?)
-      end.flatten.compact
-    end
-
     def messages_from(offences, patch)
       offences.map do |offence|
-        line = added_lines(patch).select do |added_line|
+        line = patch.added_lines.select do |added_line|
           added_line.new_lineno == offence.line
         end.first
 
