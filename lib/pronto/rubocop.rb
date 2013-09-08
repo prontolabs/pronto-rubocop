@@ -26,8 +26,7 @@ module Pronto
     end
 
     def new_message(offence, line)
-      patch = line.hunk.owner
-      path = patch.delta.new_file[:path]
+      path = line.patch.delta.new_file[:path]
       level = level(offence.severity)
 
       Message.new(path, line, level, offence.message)
