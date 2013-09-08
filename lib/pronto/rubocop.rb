@@ -18,7 +18,7 @@ module Pronto
     def inspect(patch)
       path = patch.delta.new_file_full_path
 
-      if File.extname(path) == '.rb'
+      if ruby_file?(path)
         offences = @cli.inspect_file(path)
         messages_from(offences, patch)
       end
@@ -26,32 +26,28 @@ module Pronto
 
     def messages_from(offences, patch)
       offences.map do |offence|
-        line = patch.added_lines.select do |added_line|
-          added_line.new_lineno == offence.line
-        end.first
-
-        path = patch.delta.new_file[:path]
-        message_from(path, offence, line) if line
-      end.compact
+        patch.added_lines.select { |line| line.new_lineno == offence.line }
+                         .map { |line| new_message(patch, offence, line) }
+      end.flatten.compact
     end
 
-    def message_from(path, offence, line)
-      Pronto::Message.new(path,
-                          line,
-                          level(offence.severity),
-                          offence.message)
+    def new_message(patch, offence, line)
+      path = patch.delta.new_file[:path]
+      level = level(offence.severity)
+
+      Message.new(path, line, level, offence.message)
+    end
+
+    def ruby_file?(path)
+      File.extname(path) == '.rb'
     end
 
     def level(severity)
       case severity
       when :refactor, :convention
         :info
-      when :warning
-        :warning
-      when :error
-        :error
-      when :fatal
-        :fatal
+      when :warning, :error, :fatal
+        severity
       end
     end
   end
