@@ -38,10 +38,6 @@ module Pronto
       Message.new(path, line, level, offence.message)
     end
 
-    def ruby_file?(path)
-      File.extname(path) == '.rb'
-    end
-
     def level(severity)
       case severity
       when :refactor, :convention
