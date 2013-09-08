@@ -21,11 +21,12 @@ module Pronto
 
       offences.map do |offence|
         patch.added_lines.select { |line| line.new_lineno == offence.line }
-                         .map { |line| new_message(patch, offence, line) }
+                         .map { |line| new_message(offence, line) }
       end
     end
 
-    def new_message(patch, offence, line)
+    def new_message(offence, line)
+      patch = line.hunk.owner
       path = patch.delta.new_file[:path]
       level = level(offence.severity)
 
