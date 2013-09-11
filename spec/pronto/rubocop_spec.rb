@@ -18,8 +18,7 @@ module Pronto
       end
 
       context 'pronto-rubocop repo itself' do
-        let(:path_to_repo) { File.join(File.dirname(__FILE__), '../../') }
-        let(:repo) { Rugged::Repository.new(path_to_repo) }
+        let(:repo) { Rugged::Repository.init_at('.') }
 
         let(:patches) { repo.diff('f8d5f2c', repo.head.target) }
 
