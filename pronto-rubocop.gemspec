@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'rubocop', '~> 0.13.0'
-  s.add_dependency 'pronto', '~> 0.0.3'
+  s.add_dependency 'pronto', '~> 0.1.0'
   s.add_development_dependency 'rake', '~> 10.1.0'
   s.add_development_dependency 'rspec', '~> 2.13.0'
 end
