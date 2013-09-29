@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.author      = 'Mindaugas Mozūras'
   s.email       = 'mindaugas.mozuras@gmail.com'
   s.homepage    = 'http://github.org/mmozuras/pronto-rubocop'
-  s.summary     = 'pronto runner for rubocop, ruby code analyzer'
+  s.summary     = 'Pronto runner for Rubocop, ruby code analyzer'
 
   s.required_rubygems_version = '>= 1.3.6'
   s.license = 'MIT'
