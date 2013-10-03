@@ -22,11 +22,9 @@ module Pronto
 
         let(:patches) { repo.diff('f8d5f2c', repo.head.target) }
 
-        its(:count) { should > 4 }
+        its(:count) { should > 3 }
         its(:'first.level') { should == :info }
-        its(:'first.msg') {
-          should == 'Missing top-level class documentation comment.'
-        }
+        its(:'first.msg') { should =~ /Missing.*comment./ }
       end
     end
 
