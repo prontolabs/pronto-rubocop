@@ -20,11 +20,11 @@ module Pronto
       context 'pronto-rubocop repo itself' do
         let(:repo) { Rugged::Repository.init_at('.') }
 
-        let(:patches) { repo.diff('f8d5f2c', repo.head.target) }
+        let(:patches) { repo.diff('86b7f05', '86b7f05~10') }
 
-        its(:count) { should > 3 }
+        its(:count) { should == 1 }
         its(:'first.level') { should == :info }
-        its(:'first.msg') { should =~ /Missing.*comment./ }
+        its(:'first.msg') { should =~ /snake_case.*symbols./ }
       end
     end
 
