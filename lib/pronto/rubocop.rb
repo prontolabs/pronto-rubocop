@@ -7,7 +7,7 @@ module Pronto
       @cli = ::Rubocop::CLI.new
     end
 
-    def run(patches)
+    def run(patches, _)
       return [] unless patches
 
       patches.select { |patch| patch.additions > 0 }
