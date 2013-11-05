@@ -17,7 +17,7 @@ module Pronto
     end
 
     def inspect(patch)
-      offences = @cli.inspect_file(patch.new_file_full_path)
+      offences = @cli.send(:inspect_file, patch.new_file_full_path)
 
       offences.map do |offence|
         patch.added_lines.select { |line| line.new_lineno == offence.line }
