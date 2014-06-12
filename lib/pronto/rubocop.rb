@@ -4,8 +4,8 @@ require 'rubocop'
 module Pronto
   class Rubocop < Runner
     def initialize
-      @inspector = ::Rubocop::FileInspector.new({})
-      @config_store = ::Rubocop::ConfigStore.new
+      @inspector = ::RuboCop::FileInspector.new({})
+      @config_store = ::RuboCop::ConfigStore.new
     end
 
     def run(patches, _)
@@ -18,7 +18,7 @@ module Pronto
     end
 
     def inspect(patch)
-      processed_source = ::Rubocop::SourceParser.parse_file(patch.new_file_full_path)
+      processed_source = ::RuboCop::SourceParser.parse_file(patch.new_file_full_path)
       offences = @inspector.send(:inspect_file, processed_source, @config_store).first
 
       offences.map do |offence|
