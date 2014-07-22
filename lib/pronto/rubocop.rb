@@ -4,8 +4,8 @@ require 'rubocop'
 module Pronto
   class Rubocop < Runner
     def initialize
-      @inspector = ::RuboCop::FileInspector.new({})
       @config_store = ::RuboCop::ConfigStore.new
+      @inspector = ::RuboCop::Runner.new({}, @config_store)
     end
 
     def run(patches, _)
@@ -22,7 +22,7 @@ module Pronto
 
     def inspect(patch)
       processed_source = ::RuboCop::SourceParser.parse_file(patch.new_file_full_path)
-      offences = @inspector.send(:inspect_file, processed_source, @config_store).first
+      offences = @inspector.send(:inspect_file, processed_source).first
 
       offences.map do |offence|
         patch.added_lines.select { |line| line.new_lineno == offence.line }
