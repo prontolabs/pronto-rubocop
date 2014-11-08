@@ -18,6 +18,14 @@ module Pronto
       end
 
       valid_patches.map { |patch| inspect(patch) }.flatten.compact
+        .each_with_object(Hash.new { |h, k| h[k] = [] } ) { |msg, memo|
+          lineno = msg.line.new_lineno
+          memo[lineno] << msg unless memo[lineno].any? { |existing|
+            existing.msg == msg.msg
+          }
+        }
+        .map { |_,v| v }
+
     end
 
     def inspect(patch)
