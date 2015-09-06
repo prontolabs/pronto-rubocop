@@ -24,7 +24,7 @@ module Pronto
       processed_source = ::RuboCop::ProcessedSource.from_file(patch.new_file_full_path.to_s)
       offences = @inspector.send(:inspect_file, processed_source).first
 
-      offences.map do |offence|
+      offences.sort.reject(&:disabled?).map do |offence|
         patch.added_lines.select { |line| line.new_lineno == offence.line }
                          .map { |line| new_message(offence, line) }
       end
