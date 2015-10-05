@@ -13,7 +13,7 @@ module Pronto
 
       valid_patches = patches.select do |patch|
         patch.additions > 0 &&
-          ruby_file?(patch.new_file_full_path) &&
+          (ruby_file?(patch.new_file_full_path) || included?(patch)) &&
           !excluded?(patch)
       end
 
@@ -40,6 +40,11 @@ module Pronto
     def excluded?(patch)
       path = patch.new_file_full_path.to_s
       @config_store.for(path).file_to_exclude?(path)
+    end
+
+    def included?(patch)
+      path = patch.new_file_full_path.to_s
+      @config_store.for(path).file_to_include?(path)
     end
 
     def level(severity)
