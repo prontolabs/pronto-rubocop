@@ -29,12 +29,13 @@ module Pronto
     end
 
     def inspect(patch)
-      processed_source = ::RuboCop::ProcessedSource.from_file(patch.new_file_full_path.to_s)
+      processed_source = processed_source_for(patch)
       offences = @inspector.send(:inspect_file, processed_source).first
 
       offences.sort.reject(&:disabled?).map do |offence|
-        patch.added_lines.select { |line| line.new_lineno == offence.line }
-                         .map { |line| new_message(offence, line) }
+        patch.added_lines
+          .select { |line| line.new_lineno == offence.line }
+          .map { |line| new_message(offence, line) }
       end
     end
 
@@ -48,6 +49,11 @@ module Pronto
     def config_store_for(patch)
       path = patch.new_file_full_path.to_s
       @config_store.for(path)
+    end
+
+    def processed_source_for(patch)
+      path = patch.new_file_full_path.to_s
+      ::RuboCop::ProcessedSource.from_file(path)
     end
 
     def level(severity)
