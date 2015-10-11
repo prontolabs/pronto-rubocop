@@ -11,13 +11,21 @@ module Pronto
     def run(patches, _)
       return [] unless patches
 
-      valid_patches = patches.select do |patch|
-        patch.additions > 0 &&
-          (ruby_file?(patch.new_file_full_path) || included?(patch)) &&
-          !excluded?(patch)
-      end
+      patches.select { |patch| valid_patch?(patch) }
+        .map { |patch| inspect(patch) }
+        .flatten.compact
+    end
 
-      valid_patches.map { |patch| inspect(patch) }.flatten.compact
+    def valid_patch?(patch)
+      return false if patch.additions < 1
+
+      config_store = config_store_for(patch)
+      path = patch.new_file_full_path
+
+      return false if config_store.file_to_exclude?(path.to_s)
+      return true if config_store.file_to_include?(path.to_s)
+
+      ruby_file?(path)
     end
 
     def inspect(patch)
@@ -37,14 +45,9 @@ module Pronto
       Message.new(path, line, level, offence.message)
     end
 
-    def excluded?(patch)
+    def config_store_for(patch)
       path = patch.new_file_full_path.to_s
-      @config_store.for(path).file_to_exclude?(path)
-    end
-
-    def included?(patch)
-      path = patch.new_file_full_path.to_s
-      @config_store.for(path).file_to_include?(path)
+      @config_store.for(path)
     end
 
     def level(severity)
