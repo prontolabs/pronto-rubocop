@@ -53,7 +53,7 @@ module Pronto
 
     def processed_source_for(patch)
       path = patch.new_file_full_path.to_s
-      ::RuboCop::ProcessedSource.from_file(path)
+      ::RuboCop::ProcessedSource.from_file(path, RUBY_VERSION[0..2].to_f)
     end
 
     def level(severity)
