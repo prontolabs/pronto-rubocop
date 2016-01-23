@@ -1,9 +1,6 @@
+sudo: required
+dist: trusty
 language: ruby
-sudo: false # Use container-based infrastructure
-before_install:
-  # Update bundler to fix issue at Travis
-  # see https://github.com/bundler/bundler/issues/3558#issuecomment-171347979
-  - gem update bundler
 rvm:
 - 1.9.3
 - 2.0.0
