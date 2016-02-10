@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ['LICENSE', 'README.md']
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency('rubocop', '~> 0.36.0')
+  s.add_runtime_dependency('rubocop', '~> 0.37.0')
   s.add_runtime_dependency('pronto', '~> 0.5.0')
   s.add_development_dependency('rake', '~> 10.4')
   s.add_development_dependency('rspec', '~> 3.3')
