@@ -2,13 +2,13 @@ require 'spec_helper'
 
 module Pronto
   describe Rubocop do
-    let(:rubocop) { Rubocop.new }
+    let(:rubocop) { Rubocop.new(patches) }
+    let(:patches) { nil }
 
     describe '#run' do
-      subject { rubocop.run(patches, nil) }
+      subject { rubocop.run }
 
       context 'patches are nil' do
-        let(:patches) { nil }
         it { should == [] }
       end
 

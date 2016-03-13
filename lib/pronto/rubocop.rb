@@ -3,15 +3,17 @@ require 'rubocop'
 
 module Pronto
   class Rubocop < Runner
-    def initialize
+    def initialize(_, _)
+      super
+
       @config_store = ::RuboCop::ConfigStore.new
       @inspector = ::RuboCop::Runner.new({}, @config_store)
     end
 
-    def run(patches, _)
-      return [] unless patches
+    def run
+      return [] unless @patches
 
-      patches.select { |patch| valid_patch?(patch) }
+      @patches.select { |patch| valid_patch?(patch) }
         .map { |patch| inspect(patch) }
         .flatten.compact
     end
