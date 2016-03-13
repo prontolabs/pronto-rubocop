@@ -45,7 +45,7 @@ module Pronto
       path = line.patch.delta.new_file[:path]
       level = level(offence.severity.name)
 
-      Message.new(path, line, level, offence.message)
+      Message.new(path, line, level, offence.message, nil, self.class)
     end
 
     def config_store_for(patch)
