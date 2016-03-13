@@ -3,7 +3,7 @@ require 'rubocop'
 
 module Pronto
   class Rubocop < Runner
-    def initialize(_, _)
+    def initialize(_, _ = nil)
       super
 
       @config_store = ::RuboCop::ConfigStore.new

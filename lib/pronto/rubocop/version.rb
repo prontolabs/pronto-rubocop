@@ -1,5 +1,5 @@
 module Pronto
   module RubocopVersion
-    VERSION = '0.5.3'.freeze
+    VERSION = '0.6.0'.freeze
   end
 end
