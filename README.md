@@ -10,3 +10,4 @@ Pronto runner for [Rubocop](https://github.com/bbatsov/rubocop), ruby code analy
 ## Configuration
 
 Configuring Rubocop via .rubocop.yml will work just fine with pronto-rubocop.
+You can also specify a custom `.rubocop.yml` location with the environment variable `RUBOCOP_CONFIG`
