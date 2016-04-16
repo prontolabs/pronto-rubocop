@@ -7,6 +7,7 @@ module Pronto
       super
 
       @config_store = ::RuboCop::ConfigStore.new
+      @config_store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
       @inspector = ::RuboCop::Runner.new({}, @config_store)
     end
 
