@@ -8,6 +8,7 @@ module Pronto
 
       @config_store = ::RuboCop::ConfigStore.new
       @config_store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
+      @runner_config = Pronto::ConfigFile.new.to_h['rubocop'] || {}
       @inspector = ::RuboCop::Runner.new({}, @config_store)
     end
 
@@ -60,12 +61,16 @@ module Pronto
     end
 
     def level(severity)
-      case severity
-      when :refactor, :convention
-        :warning
-      when :warning, :error, :fatal
-        severity
-      end
+      default_severities = {
+        refactor: :warning,
+        convention: :warning,
+        warning: :warning,
+        error: :error,
+        fatal: :fatal
+      }
+      severities = @runner_config['severities'] || {}
+      severities = Hash[severities.map { |k, v| [k.to_sym, v.to_sym] }]
+      default_severities.merge(severities)[severity]
     end
   end
 end
