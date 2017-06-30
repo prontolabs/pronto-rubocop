@@ -8,15 +8,26 @@ module Pronto
 
       @config_store = ::RuboCop::ConfigStore.new
       @config_store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
-      @inspector = ::RuboCop::Runner.new({}, @config_store)
+      @runner_config = Pronto::ConfigFile.new.to_h['rubocop'] || {}
+      options = {
+        autocorrect: @runner_config['auto-correct']
+      }
+      @inspector = ::RuboCop::Runner.new(options, @config_store)
     end
 
     def run
       return [] unless @patches
 
-      @patches.select { |patch| valid_patch?(patch) }
-        .map { |patch| inspect(patch) }
+      messages = @patches.select { |patch| valid_patch?(patch) }
+        .map { |patch| process(patch) }
         .flatten.compact
+
+      if @runner_config['auto-correct']
+        corrected_messages = messages.select { |m| m.msg =~ /\[Corrected\]/ }
+        total = "Total offenses: #{messages.size}    Corrected: #{corrected_messages.size}"
+        messages << Message.new(nil, nil, :info, total, nil, self.class)
+      end
+      messages
     end
 
     def valid_patch?(patch)
@@ -31,9 +42,10 @@ module Pronto
       ruby_file?(path)
     end
 
-    def inspect(patch)
+    def process(patch)
       processed_source = processed_source_for(patch)
-      offences = @inspector.send(:inspect_file, processed_source).first
+      file = patch.delta.new_file[:path]
+      offences = @inspector.send(:do_inspection_loop, file, processed_source)[1]
 
       offences.sort.reject(&:disabled?).map do |offence|
         patch.added_lines
@@ -45,8 +57,13 @@ module Pronto
     def new_message(offence, line)
       path = line.patch.delta.new_file[:path]
       level = level(offence.severity.name)
+      message = offence.message
+      if offence.corrected?
+        message = "[Corrected] #{message}"
+        level = :info
+      end
 
-      Message.new(path, line, level, offence.message, nil, self.class)
+      Message.new(path, line, level, message, nil, self.class)
     end
 
     def config_store_for(patch)
