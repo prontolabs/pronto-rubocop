@@ -7,7 +7,9 @@ module Pronto
       super
 
       @config_store = ::RuboCop::ConfigStore.new
-      @config_store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
+      if ENV['RUBOCOP_CONFIG']
+        @config_store.options_config = ENV['RUBOCOP_CONFIG']
+      end
       @runner_config = Pronto::ConfigFile.new.to_h['rubocop'] || {}
       options = {
         autocorrect: @runner_config['auto-correct']
@@ -22,11 +24,7 @@ module Pronto
         .map { |patch| process(patch) }
         .flatten.compact
 
-      if @runner_config['auto-correct']
-        corrected_messages = messages.select { |m| m.msg =~ /\[Corrected\]/ }
-        total = "Total offenses: #{messages.size}    Corrected: #{corrected_messages.size}"
-        messages << Message.new(nil, nil, :info, total, nil, self.class)
-      end
+      _add_corrected_message_total(messages) if @runner_config['auto-correct']
       messages
     end
 
@@ -46,12 +44,7 @@ module Pronto
       processed_source = processed_source_for(patch)
       file = patch.delta.new_file[:path]
       offences = @inspector.send(:do_inspection_loop, file, processed_source)[1]
-
-      offences.sort.reject(&:disabled?).map do |offence|
-        patch.added_lines
-          .select { |line| line.new_lineno == offence.line }
-          .map { |line| new_message(offence, line) }
-      end
+      _messages_for_offences(offences)
     end
 
     def new_message(offence, line)
@@ -82,6 +75,23 @@ module Pronto
         :warning
       when :warning, :error, :fatal
         severity
+      end
+    end
+
+    private
+
+    def _add_corrected_message_total(messages)
+      corrected_messages = messages.select { |m| m.msg =~ /\[Corrected\]/ }
+      total = "Total offenses: #{messages.size}   " \
+        " Corrected: #{corrected_messages.size}"
+      messages << Message.new(nil, nil, :info, total, nil, self.class)
+    end
+
+    def _messages_for_offences(offences)
+      offences.sort.reject(&:disabled?).map do |offence|
+        patch.added_lines
+          .select { |line| line.new_lineno == offence.line }
+          .map { |line| new_message(offence, line) }
       end
     end
   end
