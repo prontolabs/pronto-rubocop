@@ -39,7 +39,13 @@ module Pronto
         patch.added_lines
           .select { |line| line.new_lineno == offence.line }
           .map { |line| new_message(offence, line) }
-      end
+      end.concat(
+        offences(patch).sort.reject(&:disabled?).select do |offence|
+          offence.cop_name == "Lint/Syntax"
+        end.map do |offence|
+          new_message(offence, patch.added_lines.last)
+        end
+      )
     end
 
     def new_message(offence, line)
