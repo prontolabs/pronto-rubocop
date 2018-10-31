@@ -3,20 +3,12 @@ require 'rubocop'
 
 module Pronto
   class Rubocop < Runner
-    def initialize(_, _ = nil)
-      super
-
-      @config_store = ::RuboCop::ConfigStore.new
-      @config_store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
-      @inspector = ::RuboCop::Runner.new({}, @config_store)
-    end
-
     def run
-      return [] unless @patches
-
-      @patches.select { |patch| valid_patch?(patch) }
+      ruby_patches
+        .select { |patch| valid_patch?(patch) }
         .map { |patch| inspect(patch) }
-        .flatten.compact
+        .flatten
+        .compact
     end
 
     def valid_patch?(patch)
@@ -28,18 +20,22 @@ module Pronto
       return false if config_store.file_to_exclude?(path.to_s)
       return true if config_store.file_to_include?(path.to_s)
 
-      ruby_file?(path)
+      true
     end
 
     def inspect(patch)
       processed_source = processed_source_for(patch)
-      offences = @inspector.send(:inspect_file, processed_source).first
+      offences = inspector.send(:inspect_file, processed_source).first
 
       offences.sort.reject(&:disabled?).map do |offence|
         patch.added_lines
           .select { |line| line.new_lineno == offence.line }
           .map { |line| new_message(offence, line) }
       end
+    end
+
+    def inspector
+      @inspector ||= ::RuboCop::Runner.new({}, config_store)
     end
 
     def new_message(offence, line)
@@ -51,7 +47,15 @@ module Pronto
 
     def config_store_for(patch)
       path = patch.new_file_full_path.to_s
-      @config_store.for(path)
+      config_store.for(path)
+    end
+
+    def config_store
+      @config_store ||= begin
+        store = ::RuboCop::ConfigStore.new
+        store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
+        store
+      end
     end
 
     def processed_source_for(patch)
