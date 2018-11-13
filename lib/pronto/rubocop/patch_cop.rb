@@ -66,14 +66,6 @@ module Pronto
         Message.new(path, line, level, offence.message, nil, runner.class)
       end
 
-      def config_store
-        @config_store ||= begin
-          store = ::RuboCop::ConfigStore.new
-          store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
-          store
-        end
-      end
-
       def level(severity)
         case severity
         when :refactor, :convention
