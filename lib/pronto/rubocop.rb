@@ -6,7 +6,7 @@ module Pronto
     def run
       ruby_patches
         .select { |patch| valid_patch?(patch) }
-        .map { |patch| inspect(patch) }
+        .map { |patch| messages(patch) }
         .flatten
         .compact
     end
@@ -14,28 +14,25 @@ module Pronto
     def valid_patch?(patch)
       return false if patch.additions < 1
 
-      config_store = config_store_for(patch)
-      path = patch.new_file_full_path
+      path = patch.new_file_full_path.to_s
+      config = config_store.for(path)
 
-      return false if config_store.file_to_exclude?(path.to_s)
-      return true if config_store.file_to_include?(path.to_s)
+      return false if config.file_to_exclude?(path)
+      return true if config.file_to_include?(path)
 
       true
     end
 
-    def inspect(patch)
+    def messages(patch)
       processed_source = processed_source_for(patch)
-      offences = inspector.send(:inspect_file, processed_source).first
+      offences = run_investigation(processed_source)
 
-      offences.sort.reject(&:disabled?).map do |offence|
-        patch.added_lines
+      offences.map do |offence|
+        patch
+          .added_lines
           .select { |line| line.new_lineno == offence.line }
           .map { |line| new_message(offence, line) }
       end
-    end
-
-    def inspector
-      @inspector ||= ::RuboCop::Runner.new({}, config_store)
     end
 
     def new_message(offence, line)
@@ -43,11 +40,6 @@ module Pronto
       level = level(offence.severity.name)
 
       Message.new(path, line, level, offence.message, nil, self.class)
-    end
-
-    def config_store_for(patch)
-      path = patch.new_file_full_path.to_s
-      config_store.for(path)
     end
 
     def config_store
@@ -60,7 +52,19 @@ module Pronto
 
     def processed_source_for(patch)
       path = patch.new_file_full_path.to_s
-      ::RuboCop::ProcessedSource.from_file(path, RUBY_VERSION[0..2].to_f)
+      ruby_version = config_store.for(path).target_ruby_version
+      ::RuboCop::ProcessedSource.from_file(path, ruby_version)
+    end
+
+    def run_investigation(processed_source)
+      config = config_store.for(processed_source.path)
+      team = ::RuboCop::Cop::Team.new(registry, config, {})
+      offences = team.inspect_file(processed_source)
+      offences.sort.reject(&:disabled?)
+    end
+
+    def registry
+      ::RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
     end
 
     def level(severity)
