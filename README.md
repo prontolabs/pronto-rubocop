@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/prontolabs/pronto-rubocop.svg?branch=master)](https://travis-ci.org/prontolabs/pronto-rubocop)
 [![Gem Version](https://badge.fury.io/rb/pronto-rubocop.png)](http://badge.fury.io/rb/pronto-rubocop)
 
-Pronto runner for [Rubocop](https://github.com/bbatsov/rubocop), ruby code analyzer. [What is Pronto?](https://github.com/mmozuras/pronto)
+Pronto runner for [Rubocop](https://github.com/bbatsov/rubocop), ruby code analyzer. [What is Pronto?](https://github.com/prontolabs/pronto)
 
 ## Configuration
 
