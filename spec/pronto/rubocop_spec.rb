@@ -28,16 +28,5 @@ module Pronto
         end
       end
     end
-
-    describe '#level' do
-      subject { rubocop.level(severity) }
-
-      ::RuboCop::Cop::Severity::NAMES.each do |severity|
-        let(:severity) { severity }
-        context "severity '#{severity}' conversion to Pronto level" do
-          it { should_not be_nil }
-        end
-      end
-    end
   end
 end

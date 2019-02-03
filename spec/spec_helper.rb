@@ -10,8 +10,3 @@ RSpec.shared_context 'test repo' do
   let(:repo) { Pronto::Git::Repository.new('spec/fixtures/test.git') }
   after { FileUtils.mv(dot_git, git) }
 end
-
-RSpec.configure do |config|
-  config.expect_with(:rspec) { |c| c.syntax = :should }
-  config.mock_with(:rspec) { |c| c.syntax = :should }
-end
