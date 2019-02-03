@@ -16,6 +16,17 @@ module Pronto
         let(:patches) { [] }
         it { should == [] }
       end
+
+      context 'patches with an offense' do
+        include_context 'test repo'
+
+        let(:patches) { repo.diff('ac7e278') }
+
+        its(:count) { should == 1 }
+        its(:'first.msg') do
+          should =~ /Prefer single-quoted strings/
+        end
+      end
     end
 
     describe '#level' do
