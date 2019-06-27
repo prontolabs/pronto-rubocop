@@ -16,15 +16,15 @@ module Pronto
         let(:patches) { [] }
         it { should == [] }
       end
-    end
 
-    describe '#level' do
-      subject { rubocop.level(severity) }
+      context 'patches with an offense' do
+        include_context 'test repo'
 
-      ::RuboCop::Cop::Severity::NAMES.each do |severity|
-        let(:severity) { severity }
-        context "severity '#{severity}' conversion to Pronto level" do
-          it { should_not be_nil }
+        let(:patches) { repo.diff('ac7e278') }
+
+        its(:count) { should == 1 }
+        its(:'first.msg') do
+          should =~ /Prefer single-quoted strings/
         end
       end
     end
