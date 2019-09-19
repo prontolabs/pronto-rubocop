@@ -34,7 +34,6 @@ module Pronto
       def config
         @config ||= begin
           store = ::RuboCop::ConfigStore.new
-          store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
           store.for(path)
         end
       end
@@ -66,14 +65,33 @@ module Pronto
         Message.new(path, line, level, offence.message, nil, runner.class)
       end
 
-      def level(severity)
-        case severity
-        when :refactor, :convention
-          :warning
-        when :warning, :error, :fatal
-          severity
-        end
+      def config_severities
+        @config_severities ||=
+          Hash[
+            ::Pronto::ConfigFile.new.to_h
+              .fetch('rubocop', {})
+              .fetch('severities', {})
+              .map { |k, v| [k.to_sym, v.to_sym] }
+          ]
       end
+
+      def severities
+        @severities ||= DEFAULT_SEVERITIES.merge(config_severities)
+      end
+
+      def level(severity)
+        severities.fetch(severity)
+      end
+
+      DEFAULT_SEVERITIES = {
+        refactor: :warning,
+        convention: :warning,
+        warning: :warning,
+        error: :error,
+        fatal: :fatal
+      }.freeze
+
+      private_constant :DEFAULT_SEVERITIES
     end
   end
 end
