@@ -2,74 +2,31 @@ require 'spec_helper'
 
 describe Pronto::Rubocop::PatchCop do
   let(:patch_cop) { described_class.new(patch, runner) }
-  let(:patch) { double :patch }
+  let(:patch) do
+    double :patch, new_file_full_path: 'example.rb', added_lines: [line]
+  end
+  let(:line) { double :line, new_lineno: 42 }
   let(:runner) { double :runner }
+  let(:processed_source) { double :processed_source }
+  let(:team) { double :team, inspect_file: [offense] }
+  let(:offense) { double :offense, disabled?: false, line: 42 }
+  let(:offense_line) { double :offense_line, message: 'Err' }
 
-  describe '#level' do
-    subject { patch_cop.send(:level, severity) }
+  before do
+    allow(RuboCop::ProcessedSource).to receive(:from_file) { processed_source }
+    allow(RuboCop::Cop::Team).to receive(:new) { team }
+    allow(Pronto::Rubocop::OffenseLine).to receive(:new) { offense_line }
+  end
 
-    ::RuboCop::Cop::Severity::NAMES.each do |severity|
-      let(:severity) { severity }
-      context "severity '#{severity}' conversion to Pronto level" do
-        it { should_not be_nil }
-      end
+  describe '#processed_source' do
+    it do
+      expect(patch_cop.processed_source).to eq(processed_source)
     end
   end
 
-  describe '#default_levels' do
-    default_level_hash = {
-      refactor: :warning,
-      convention: :warning,
-      warning: :warning,
-      error: :error,
-      fatal: :fatal
-    }
-    default_level_hash.each do |severity, expected_level|
-      context "Checking level for severity: #{severity} => #{expected_level}" do
-        it { expect(patch_cop.send(:level, severity)).to eq(expected_level) }
-      end
-    end
-  end
-
-  describe '#override_severity_levels_all_fatal' do
-    before do
-      allow(File).to receive(:exist?).and_return(true)
-      allow(YAML).to receive(:load_file).and_return(
-        'rubocop' => {
-          'severities' => {
-            refactor: :fatal,
-            convention: :fatal,
-            warning: :fatal,
-            error: :fatal,
-            fatal: :fatal
-          }
-        }
-      )
-    end
-
-    ::RuboCop::Cop::Severity::NAMES.each do |severity|
-      it { expect(patch_cop.send(:level, severity)).to eq(:fatal) }
-    end
-  end
-
-  describe '#override_severity_levels_all_refactor' do
-    before do
-      allow(File).to receive(:exist?).and_return(true)
-      allow(YAML).to receive(:load_file).and_return(
-        'rubocop' => {
-          'severities' => {
-            refactor: :refactor,
-            convention: :refactor,
-            warning: :refactor,
-            error: :refactor,
-            fatal: :refactor
-          }
-        }
-      )
-    end
-
-    ::RuboCop::Cop::Severity::NAMES.each do |severity|
-      it { expect(patch_cop.send(:level, severity)).to eq(:refactor) }
+  describe '#messages' do
+    it do
+      expect(patch_cop.messages).to eq(['Err'])
     end
   end
 end
