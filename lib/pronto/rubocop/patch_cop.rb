@@ -1,6 +1,8 @@
 module Pronto
   class Rubocop < Runner
     class PatchCop
+      attr_reader :runner
+
       def initialize(patch, runner)
         @patch = patch
         @runner = runner
@@ -9,21 +11,40 @@ module Pronto
       def messages
         return [] unless valid?
 
-        offences.map do |offence|
+        offenses.flat_map do |offense|
           patch
             .added_lines
-            .select { |line| line.new_lineno == offence.line }
-            .map { |line| new_message(offence, line) }
+            .select { |line| line.new_lineno == offense.line }
+            .map { |line| OffenseLine.new(self, offense, line).message }
+        end
+      end
+
+      def processed_source
+        @processed_source ||= ::RuboCop::ProcessedSource.from_file(
+          path,
+          rubocop_config.target_ruby_version
+        )
+      end
+
+      def registry
+        @registry ||= ::RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
+      end
+
+      def rubocop_config
+        @rubocop_config ||= begin
+          store = ::RuboCop::ConfigStore.new
+          store.for(path)
         end
       end
 
       private
 
-      attr_reader :patch, :runner
+      attr_reader :patch
 
       def valid?
-        return false if config.file_to_exclude?(path)
-        return true if config.file_to_include?(path)
+        return false if rubocop_config.file_to_exclude?(path)
+        return true if rubocop_config.file_to_include?(path)
+
         true
       end
 
@@ -31,15 +52,7 @@ module Pronto
         @path ||= patch.new_file_full_path.to_s
       end
 
-      def config
-        @config ||= begin
-          store = ::RuboCop::ConfigStore.new
-          store.options_config = ENV['RUBOCOP_CONFIG'] if ENV['RUBOCOP_CONFIG']
-          store.for(path)
-        end
-      end
-
-      def offences
+      def offenses
         team
           .inspect_file(processed_source)
           .sort
@@ -47,32 +60,7 @@ module Pronto
       end
 
       def team
-        @team ||= ::RuboCop::Cop::Team.new(registry, config)
-      end
-
-      def registry
-        @registry ||= ::RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
-      end
-
-      def processed_source
-        @processed_source ||=
-          ::RuboCop::ProcessedSource.from_file(path, config.target_ruby_version)
-      end
-
-      def new_message(offence, line)
-        path = line.patch.delta.new_file[:path]
-        level = level(offence.severity.name)
-
-        Message.new(path, line, level, offence.message, nil, runner.class)
-      end
-
-      def level(severity)
-        case severity
-        when :refactor, :convention
-          :warning
-        when :warning, :error, :fatal
-          severity
-        end
+        @team ||= ::RuboCop::Cop::Team.new(registry, rubocop_config)
       end
     end
   end
