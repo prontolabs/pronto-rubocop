@@ -60,7 +60,13 @@ module Pronto
       end
 
       def team
-        @team ||= ::RuboCop::Cop::Team.new(registry, rubocop_config)
+        @team ||=
+          if ::RuboCop::Cop::Team.respond_to?(:mobilize)
+            # rubocop v0.85.0 and later
+            ::RuboCop::Cop::Team.mobilize(registry, rubocop_config)
+          else
+            ::RuboCop::Cop::Team.new(registry, rubocop_config)
+          end
       end
     end
   end

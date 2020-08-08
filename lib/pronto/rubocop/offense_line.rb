@@ -56,12 +56,23 @@ module Pronto
       end
 
       def autocorrect_team
-        @autocorrect_team ||= ::RuboCop::Cop::Team.new(
-          ::RuboCop::Cop::Registry.new([cop]),
-          patch_cop.rubocop_config,
-          auto_correct: true,
-          stdin: true,
-        )
+        @autocorrect_team ||=
+          if ::RuboCop::Cop::Team.respond_to?(:mobilize)
+            # rubocop v0.85.0 and later
+            ::RuboCop::Cop::Team.mobilize(
+              ::RuboCop::Cop::Registry.new([cop]),
+              patch_cop.rubocop_config,
+              auto_correct: true,
+              stdin: true,
+            )
+          else
+            ::RuboCop::Cop::Team.new(
+              ::RuboCop::Cop::Registry.new([cop]),
+              patch_cop.rubocop_config,
+              auto_correct: true,
+              stdin: true,
+            )
+          end
       end
 
       def cop
