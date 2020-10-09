@@ -65,14 +65,14 @@ module Pronto
       def autocorrect_team
         @autocorrect_team ||=
           ::RuboCop::Cop::Team.send(MOBILIZE,
-            ::RuboCop::Cop::Registry.new([cop]),
+            ::RuboCop::Cop::Registry.new([cop_class]),
             patch_cop.rubocop_config,
             auto_correct: true,
             stdin: true,
           )
       end
 
-      def cop
+      def cop_class
         patch_cop.registry.find_by_cop_name(offense.cop_name)
       end
 
