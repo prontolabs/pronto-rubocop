@@ -55,24 +55,21 @@ module Pronto
         processed_source.lines.join("\n").lines
       end
 
+      if ::RuboCop::Cop::Team.respond_to?(:mobilize)
+        MOBILIZE = :mobilize
+      else
+        # rubocop < v0.85.0
+        MOBILIZE = :new
+      end
+
       def autocorrect_team
         @autocorrect_team ||=
-          if ::RuboCop::Cop::Team.respond_to?(:mobilize)
-            # rubocop v0.85.0 and later
-            ::RuboCop::Cop::Team.mobilize(
-              ::RuboCop::Cop::Registry.new([cop]),
-              patch_cop.rubocop_config,
-              auto_correct: true,
-              stdin: true,
-            )
-          else
-            ::RuboCop::Cop::Team.new(
-              ::RuboCop::Cop::Registry.new([cop]),
-              patch_cop.rubocop_config,
-              auto_correct: true,
-              stdin: true,
-            )
-          end
+          ::RuboCop::Cop::Team.send(MOBILIZE,
+            ::RuboCop::Cop::Registry.new([cop]),
+            patch_cop.rubocop_config,
+            auto_correct: true,
+            stdin: true,
+          )
       end
 
       def cop
