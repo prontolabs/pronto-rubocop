@@ -1,11 +1,14 @@
-Documentation:
+AllCops:
+  NewCops: enable
+
+Style/Documentation:
   Enabled: false
 
-SignalException:
+Style/SignalException:
   EnforcedStyle: only_raise
 
-MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
-MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
