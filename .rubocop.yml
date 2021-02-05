@@ -13,3 +13,8 @@ Layout/MultilineOperationIndentation:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+
+Metrics/BlockLength:
+  Exclude:
+    - pronto-rubocop.gemspec
+    - spec/**/*_spec.rb

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pronto'
 require 'rubocop'
 require 'pronto/rubocop/patch_cop'
@@ -7,7 +9,7 @@ module Pronto
   class Rubocop < Runner
     def run
       ruby_patches
-        .select { |patch| patch.additions > 0 }
+        .select { |patch| patch.additions.positive? }
         .flat_map { |patch| PatchCop.new(patch, self).messages }
     end
 

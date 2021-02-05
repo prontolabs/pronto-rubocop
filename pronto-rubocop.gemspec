@@ -1,6 +1,6 @@
-# -*- encoding: utf-8 -*-
+# frozen_string_literal: true
 
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'pronto/rubocop/version'
 require 'English'
 

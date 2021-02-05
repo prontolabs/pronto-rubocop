@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Pronto::Rubocop::OffenseLine do
@@ -29,7 +31,7 @@ describe Pronto::Rubocop::OffenseLine do
     it { expect(message.msg).to eq('Fake message') }
 
     context 'with default severity levels' do
-       default_level_hash = {
+      default_level_hash = {
         refactor: :warning,
         convention: :warning,
         warning: :warning,
@@ -55,8 +57,8 @@ describe Pronto::Rubocop::OffenseLine do
             'convention' => 'fatal',
             'warning' => 'fatal',
             'error' => 'fatal',
-            'fatal' => 'fatal',
-          },
+            'fatal' => 'fatal'
+          }
         }
       end
 
