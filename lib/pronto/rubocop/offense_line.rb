@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pronto
   class Rubocop < Runner
     class OffenseLine
@@ -31,7 +33,7 @@ module Pronto
 
       def suggestion_text
         return unless patch_cop.runner.pronto_rubocop_config['suggestions']
-        return if corrections_count == 0
+        return if corrections_count.zero?
         return if differing_lines_count != corrections_count
 
         @suggestion_text ||= corrected_lines[offense.line - 1]
@@ -87,11 +89,10 @@ module Pronto
       def autocorrect_team
         @autocorrect_team ||=
           ::RuboCop::Cop::Team.send(MOBILIZE,
-            ::RuboCop::Cop::Registry.new([cop_class]),
-            patch_cop.rubocop_config,
-            auto_correct: true,
-            stdin: true,
-          )
+                                    ::RuboCop::Cop::Registry.new([cop_class]),
+                                    patch_cop.rubocop_config,
+                                    auto_correct: true,
+                                    stdin: true)
       end
 
       def cop_class
