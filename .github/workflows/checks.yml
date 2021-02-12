@@ -12,23 +12,16 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.4', '2.5', '2.6', '2.7', '3.0']
-        rubocop: ['0.63.1', '0.84.0', '0.85.0', '0.86.0', '0.87.0', '< 1.0']
-        include:
-          - ruby: '2.3'
-            rubocop: '0.63.1'
-          - ruby: '2.3'
-            rubocop: '0.81.0'
+        rubocop: ['0.63.1', '0.81.0', '0.84.0', '0.85.0', '0.86.0', '0.87.0', '1.0.0', '1.x']
       fail-fast: false
+    env:
+      BUNDLE_GEMFILE: gemfiles/rubocop_${{ matrix.rubocop }}.gemfile
     steps:
     - uses: actions/checkout@v2
-    - name: use specific rubocop version
-      run: echo "gem 'rubocop', '${{ matrix.rubocop }}'" > Gemfile.local
-    - name: use specific rubocop-ast version (if required)
-      if: matrix.rubocop == '0.84.0' || matrix.rubocop == '0.85.0' || matrix.rubocop == '0.85.1'
-      run: echo "gem 'rubocop-ast', '< 0.7.0'" >> Gemfile.local
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: rake spec
-      run: bundle exec rake spec
+      run: |
+        bundle exec rake spec
