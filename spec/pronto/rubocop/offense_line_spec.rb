@@ -52,13 +52,8 @@ describe Pronto::Rubocop::OffenseLine do
     context 'with overridden severity levels to "fatal"' do
       let(:config) do
         {
-          'severities' => {
-            'refactor' => 'fatal',
-            'convention' => 'fatal',
-            'warning' => 'fatal',
-            'error' => 'fatal',
-            'fatal' => 'fatal'
-          }
+          'severities' =>
+            Hash[::RuboCop::Cop::Severity::NAMES.map { |name| [name, 'fatal'] }] 
         }
       end
 

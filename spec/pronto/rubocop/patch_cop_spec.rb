@@ -9,7 +9,8 @@ describe Pronto::Rubocop::PatchCop do
   end
   let(:line) { double :line, new_lineno: 42 }
   let(:runner) { double :runner }
-  let(:processed_source) { double :processed_source }
+  let(:ast) { double :ast, each_node: nil }
+  let(:processed_source) { double :processed_source, ast: ast }
   let(:team) { double :team, inspect_file: [offense] }
   let(:offense) { double :offense, disabled?: false, line: 42 }
   let(:offense_line) { double :offense_line, message: 'Err' }
