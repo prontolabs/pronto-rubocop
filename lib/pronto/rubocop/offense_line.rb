@@ -51,7 +51,8 @@ module Pronto
         processed_source.lines.join("\n").lines
       end
 
-      if ::RuboCop::Cop::Team.respond_to?(:mobilize)
+      if ::RuboCop::Cop::Team.respond_to?(:mobilize) && ::RuboCop::Cop::Team.public_method_defined?(:investigate)
+        # rubocop >= 0.87.0 has both mobilize and public investigate method
         MOBILIZE = :mobilize
 
         def report
@@ -66,8 +67,8 @@ module Pronto
           report.offenses.size
         end
       else
-        # rubocop < v0.85.0
-        MOBILIZE = :new
+        # rubocop 0.85.x and 0.86.0 have mobilize, older versions don't
+        MOBILIZE = ::RuboCop::Cop::Team.respond_to?(:mobilize) ? :mobilize : :new
 
         def corrector
           @corrector ||= begin
