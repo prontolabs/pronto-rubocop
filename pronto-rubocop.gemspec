@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_runtime_dependency('pronto', '~> 0.11.0')
-  s.add_runtime_dependency('rubocop', '>= 0.49.1', '< 1.0')
+  s.add_runtime_dependency('rubocop', '>= 0.63.1', '< 1.0')
   s.add_development_dependency('rake', '~> 12.0')
   s.add_development_dependency('rspec', '~> 3.4')
   s.add_development_dependency('rspec-its', '~> 1.2')
