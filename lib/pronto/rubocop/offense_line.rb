@@ -119,7 +119,7 @@ module Pronto
         convention: :warning,
         warning: :warning,
         error: :error,
-        fatal: :fatal
+        fatal: :fatal,
       }.freeze
 
       private_constant :DEFAULT_SEVERITIES

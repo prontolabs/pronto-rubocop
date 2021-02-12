@@ -34,7 +34,7 @@ describe Pronto::Rubocop::OffenseLine do
         convention: :warning,
         warning: :warning,
         error: :error,
-        fatal: :fatal
+        fatal: :fatal,
       }
       default_level_hash.each do |given_severity, expected_level|
         context "when severity is #{given_severity}" do
@@ -56,6 +56,7 @@ describe Pronto::Rubocop::OffenseLine do
             'warning' => 'fatal',
             'error' => 'fatal',
             'fatal' => 'fatal',
+            'info' => 'fatal',
           },
         }
       end
