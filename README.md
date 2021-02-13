@@ -38,3 +38,17 @@ the Pull Request.
 For example:
 
 ![GitHub screenshot with suggestion](https://user-images.githubusercontent.com/132/50402757-1bd75b80-0799-11e9-809f-8b8a23ed33f6.png)
+
+## RuboCop versions
+
+If you need to use RuboCop v0.84.0 or v0.85.x, you'll need to ensure that
+you've also need to add `gem 'rubocop-ast', '< 0.7.0'` to your Gemfile as
+these were the first versions to use rubocop-ast, and unfortunately the
+dependency was loose enough that rubocop-ast versions >= 0.7.0 were allowed,
+which causes `require 'rubocop'` to fail with
+```
+  NoMethodError:
+    undefined method `join' for #<Set: {:==, :===, :!=, :<=, :>=, :>, :<}>
+  in rubocop-0.84.0/lib/rubocop/cop/style/redundant_conditional.rb:57:in `<class:RedundantConditional>'
+```
+This is due to https://github.com/rubocop-hq/rubocop-ast/issues/22
