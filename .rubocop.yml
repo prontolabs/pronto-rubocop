@@ -1,5 +1,6 @@
 AllCops:
   NewCops: enable
+  TargetRubyVersion: 2.4 # workaround for https://github.com/rubocop-hq/rubocop/issues/9482 as gemspec has 2.3.0
 
 Style/Documentation:
   Enabled: false
