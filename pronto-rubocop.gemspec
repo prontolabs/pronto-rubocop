@@ -1,6 +1,6 @@
-# -*- encoding: utf-8 -*-
+# frozen_string_literal: true
 
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'pronto/rubocop/version'
 require 'English'
 
@@ -33,7 +33,8 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_runtime_dependency('pronto', '~> 0.11.0')
-  s.add_runtime_dependency('rubocop', '>= 0.63.1', '< 1.0')
+  s.add_runtime_dependency('rubocop', '>= 0.63.1', '< 2.0')
+  s.add_development_dependency('appraisal')
   s.add_development_dependency('rake', '~> 12.0')
   s.add_development_dependency('rspec', '~> 3.4')
   s.add_development_dependency('rspec-its', '~> 1.2')

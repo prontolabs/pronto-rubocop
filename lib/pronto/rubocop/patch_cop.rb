@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pronto
   class Rubocop < Runner
     class PatchCop
