@@ -53,7 +53,7 @@ describe Pronto::Rubocop::OffenseLine do
       let(:config) do
         {
           'severities' =>
-            Hash[::RuboCop::Cop::Severity::NAMES.map { |name| [name, 'fatal'] }] 
+            ::RuboCop::Cop::Severity::NAMES.map { |name| [name, 'fatal'] }.to_h
         }
       end
 
