@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency('pronto', '~> 0.11.0')
   s.add_runtime_dependency('rubocop', '>= 0.63.1', '< 2.0')
-  s.add_development_dependency('rake', '~> 12.0')
-  s.add_development_dependency('rspec', '~> 3.4')
-  s.add_development_dependency('rspec-its', '~> 1.2')
+  s.add_development_dependency('rake', '~> 13.0.3')
+  s.add_development_dependency('rspec', '~> 3.10.0')
+  s.add_development_dependency('rspec-its', '~> 1.3.0')
 end
