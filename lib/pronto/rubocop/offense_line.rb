@@ -66,7 +66,8 @@ module Pronto
         end
 
         def corrections_count
-          report.offenses.size
+          # Some lines may contain more than one offense
+          report.offenses.map(&:line).uniq.size
         end
       else
         # rubocop 0.85.x and 0.86.0 have mobilize, older versions don't
