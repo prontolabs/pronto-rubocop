@@ -118,6 +118,7 @@ module Pronto
       end
 
       DEFAULT_SEVERITIES = {
+        info: :info,
         refactor: :warning,
         convention: :warning,
         warning: :warning,
