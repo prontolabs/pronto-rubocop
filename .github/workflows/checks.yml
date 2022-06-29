@@ -5,6 +5,9 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1' # 6am every Monday
 
 jobs:
   unit_tests:
