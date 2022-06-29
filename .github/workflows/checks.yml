@@ -12,12 +12,21 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.4', '2.5', '2.6', '2.7', '3.0']
-        rubocop: ['0.63.1', '0.81.0', '0.84.0', '0.85.0', '0.86.0', '0.87.0', '< 1.0', '1.0.0', '< 2.0']
+        rubocop: ['0.63.1', '0.81.0', '0.84.0', '0.85.0', '0.86.0', '0.87.0', '< 1.0', '1.0.0', '1.29.1', '1.30.0', '< 2.0']
         include:
           - ruby: '2.3'
             rubocop: '0.63.1'
           - ruby: '2.3'
             rubocop: '0.81.0'
+        exclude:
+          - ruby: '2.4'
+            rubocop: '1.29.1'
+          - ruby: '2.4'
+            rubocop: '1.30.0'
+          - ruby: '2.5'
+            rubocop: '1.29.1'
+          - ruby: '2.5'
+            rubocop: '1.30.0'
       fail-fast: false
     steps:
     - uses: actions/checkout@v2

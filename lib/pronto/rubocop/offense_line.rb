@@ -56,6 +56,8 @@ module Pronto
       if ::RuboCop::Cop::Team.respond_to?(:mobilize) && ::RuboCop::Cop::Team.public_method_defined?(:investigate)
         # rubocop >= 0.87.0 has both mobilize and public investigate method
         MOBILIZE = :mobilize
+        # rubocop 1.30.0 renamed from auto_correct to autocorrect
+        AUTOCORRECT = Gem::Version.new(::RuboCop::Version::STRING) >= Gem::Version.new("1.30.0") ? :autocorrect : :auto_correct
 
         def report
           @report ||= autocorrect_team.investigate(processed_source).cop_reports.first
@@ -72,6 +74,7 @@ module Pronto
       else
         # rubocop 0.85.x and 0.86.0 have mobilize, older versions don't
         MOBILIZE = ::RuboCop::Cop::Team.respond_to?(:mobilize) ? :mobilize : :new
+        AUTOCORRECT = :auto_correct
 
         def corrector
           @corrector ||= begin
@@ -92,8 +95,7 @@ module Pronto
           ::RuboCop::Cop::Team.send(MOBILIZE,
                                     ::RuboCop::Cop::Registry.new([cop_class]),
                                     patch_cop.rubocop_config,
-                                    auto_correct: true,
-                                    stdin: true)
+                                    **{ AUTOCORRECT => true, stdin: true })
       end
 
       def cop_class
