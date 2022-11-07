@@ -22,10 +22,15 @@ module Pronto
       end
 
       def processed_source
-        @processed_source ||= ::RuboCop::ProcessedSource.from_file(
-          path,
-          rubocop_config.target_ruby_version
-        )
+        @processed_source ||= begin
+          processed_source = ::RuboCop::ProcessedSource.from_file(
+            path,
+            rubocop_config.target_ruby_version
+          )
+          processed_source.registry = registry if processed_source.respond_to?(:registry=)
+          processed_source.config = rubocop_config if processed_source.respond_to?(:config=)
+          processed_source
+        end
       end
 
       def registry
