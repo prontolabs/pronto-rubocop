@@ -14,10 +14,15 @@ module Pronto
         return [] unless valid?
 
         offenses.flat_map do |offense|
-          patch
+          offending_line = patch
             .added_lines
-            .select { |line| line.new_lineno == offense.line }
-            .map { |line| OffenseLine.new(self, offense, line).message }
+            .detect { |line| offense_includes?(offense, line.new_lineno) }
+
+          if offending_line
+            [OffenseLine.new(self, offense, offending_line).message]
+          else
+            []
+          end
         end
       end
 
@@ -64,6 +69,11 @@ module Pronto
           .inspect_file(processed_source)
           .sort
           .reject(&:disabled?)
+      end
+
+      def offense_includes?(offense, line_number)
+        offense_range = (offense.location.first_line..offense.location.last_line)
+        offense_range.include?(line_number)
       end
 
       def team
