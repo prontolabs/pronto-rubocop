@@ -56,7 +56,7 @@ module Pronto
       context 'patches with multiple offenses' do
         include_context 'test repo'
 
-        let(:patches) { repo.show_commit('a1095e7') }
+        let(:patches) { repo.diff('a1095e7') }
 
         its(:count) { should == 4 }
 
