@@ -13,17 +13,9 @@ module Pronto
       def messages
         return [] unless valid?
 
-        offenses.flat_map do |offense|
-          offending_line = patch
-            .added_lines
-            .detect { |line| offense_includes?(offense, line.new_lineno) }
-
-          if offending_line
-            [OffenseLine.new(self, offense, offending_line).message]
-          else
-            []
-          end
-        end
+        offenses
+          .map { |offense| first_relevant_message(patch, offense) }
+          .compact
       end
 
       def processed_source
@@ -85,6 +77,19 @@ module Pronto
           else
             ::RuboCop::Cop::Team.new(registry, rubocop_config)
           end
+      end
+
+      def first_relevant_line(patch, offense)
+        patch.added_lines.detect do |line|
+          offense_includes?(offense, line.new_lineno)
+        end
+      end
+
+      def first_relevant_message(patch, offense)
+        offending_line = first_relevant_line(patch, offense)
+        return nil unless offending_line
+
+        OffenseLine.new(self, offense, offending_line).message
       end
     end
   end
