@@ -12,7 +12,8 @@ describe Pronto::Rubocop::PatchCop do
   let(:ast) { double :ast, each_node: nil }
   let(:processed_source) { double :processed_source, ast: ast }
   let(:team) { double :team, inspect_file: [offense] }
-  let(:offense) { double :offense, disabled?: false, line: 42 }
+  let(:offense_location) { double :location, first_line: 42, last_line: 43 }
+  let(:offense) { double :offense, disabled?: false, location: offense_location }
   let(:offense_line) { double :offense_line, message: 'Err' }
 
   before do
@@ -30,6 +31,14 @@ describe Pronto::Rubocop::PatchCop do
   describe '#messages' do
     it do
       expect(patch_cop.messages).to eq(['Err'])
+    end
+
+    context 'when there is an error including the patch, but not starting inside it' do
+      let(:offense_location) { double :location, first_line: 40, last_line: 43 }
+
+      it do
+        expect(patch_cop.messages).to eq(['Err'])
+      end
     end
   end
 end
