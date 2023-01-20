@@ -34,6 +34,7 @@ module Pronto
       def suggestion_text
         return unless patch_cop.runner.pronto_rubocop_config['suggestions']
         return if corrections_count.zero?
+        return if corrector.nil?  # possible after optimisation in https://github.com/rubocop/rubocop/pull/11264
         return if differing_lines_count != corrections_count
 
         @suggestion_text ||= corrected_lines[offense.line - 1]
