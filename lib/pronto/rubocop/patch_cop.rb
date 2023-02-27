@@ -50,7 +50,7 @@ module Pronto
         return false if rubocop_config.file_to_exclude?(path)
         return true if rubocop_config.file_to_include?(path)
 
-        true
+        runner.ruby_file?(path)
       end
 
       def path

@@ -8,7 +8,9 @@ require 'pronto/rubocop/offense_line'
 module Pronto
   class Rubocop < Runner
     def run
-      ruby_patches
+      return [] unless @patches
+
+      @patches
         .select { |patch| patch.additions.positive? }
         .flat_map { |patch| PatchCop.new(patch, self).messages }
     end
