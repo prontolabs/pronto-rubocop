@@ -65,8 +65,11 @@ module Pronto
       end
 
       def offense_includes?(offense, line_number)
-        offense_range = (offense.location.first_line..offense.location.last_line)
-        offense_range.include?(line_number)
+        if only_patched_lines?
+          offense.location.first_line == line_number
+        else
+          (offense.location.first_line..offense.location.last_line).include?(line_number)
+        end
       end
 
       def team
@@ -90,6 +93,10 @@ module Pronto
         return nil unless offending_line
 
         OffenseLine.new(self, offense, offending_line).message
+      end
+
+      def only_patched_lines?
+        @only_patched_lines ||= runner.pronto_rubocop_config.fetch('only_patched_lines', false)
       end
     end
   end
