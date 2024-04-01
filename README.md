@@ -62,6 +62,19 @@ When increasing the range, you will also catch warnings on lines that were not m
 
 For example, if you set `range: 1`, you will catch warnings starting before the patched lines, but only if they are within 1 line.
 
+```ruby
+# With `only_patched_lines` enabled and a default range of 1, the Metrics/ClassLength warning is not included in the results.
+# However, when `range` is increased to 10, now Metrics/ClassLength will be included alongside the Metrics/MethodLength warning for the `too_long` method.
+class TooLong
+  def just_fine
+    "I'm doing just fine, how about you?"
+  end
+
+  def too_long
+    # Pretend I am a new method that's 32 lines long.
+  end
+end
+
 ## RuboCop versions
 
 If you need to use RuboCop v0.84.0 or v0.85.x, you'll need to ensure that
