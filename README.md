@@ -34,7 +34,10 @@ rubocop:
   suggestions: true
 
   # Only report warnings on added/modified lines of code
-  only_patched_lines: false # default
+  # You can provide a number for a range to catch warnings on lines that were not modified
+  only_patched_lines:
+    enabled: false # default
+    range: 0 # default
 ```
 
 ## Suggestions
@@ -54,6 +57,10 @@ When `only_patched_lines` is enabled, Rubocop warnings that start outside of the
 For example, if you add a method to a class with too many lines, the warning at the class level will not apply.
 
 This can be useful for legacy applications with a lot of RuboCop warnings, where you want to focus on the new code.
+
+When increasing the range, you will also catch warnings on lines that were not modified but are within the range of the modified lines.
+
+For example, if you set `range: 1`, you will catch warnings starting before the patched lines, but only if they are within 1 line.
 
 ## RuboCop versions
 

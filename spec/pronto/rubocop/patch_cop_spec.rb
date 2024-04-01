@@ -50,8 +50,8 @@ describe Pronto::Rubocop::PatchCop do
       it { expect(messages).to eq([]) }
     end
 
-    context 'when rubocop config for only_patched_lines is false' do
-      let(:config) { { 'only_patched_lines' => false } }
+    context 'when rubocop config for only_patched_lines is not enabled' do
+      let(:config) { { 'only_patched_lines' => { 'enabled' => false } } }
 
       it { expect(messages).to eq(['Err']) }
 
@@ -74,8 +74,8 @@ describe Pronto::Rubocop::PatchCop do
       end
     end
 
-    context 'when rubocop config for only_patched_lines is true' do
-      let(:config) { { 'only_patched_lines' => true } }
+    context 'when rubocop config for only_patched_lines is enabled' do
+      let(:config) { { 'only_patched_lines' => { 'enabled' => true } } }
 
       it { expect(messages).to eq(['Err']) }
 
@@ -93,6 +93,36 @@ describe Pronto::Rubocop::PatchCop do
 
       context 'when there is an error excluding the patch' do
         let(:offense_location) { double :location, first_line: 40, last_line: 41 }
+
+        it { expect(messages).to eq([]) }
+      end
+    end
+
+    context 'when rubocop config for only_patched_lines is enabled with a range of 5' do
+      let(:config) { { 'only_patched_lines' => { 'enabled' => true, 'range' => 5 } } }
+
+      it { expect(messages).to eq(['Err']) }
+
+      context 'when there is an error only on the patch line' do
+        let(:offense_location) { double :location, first_line: 42, last_line: 42 }
+
+        it { expect(messages).to eq(['Err']) }
+      end
+
+      context 'when there is an error including the patch, but not starting inside it' do
+        let(:offense_location) { double :location, first_line: 40, last_line: 43 }
+
+        it { expect(messages).to eq(['Err']) }
+      end
+
+      context 'when there is an error excluding the patch' do
+        let(:offense_location) { double :location, first_line: 40, last_line: 41 }
+
+        it { expect(messages).to eq(['Err']) }
+      end
+
+      context 'when there is an error excluding the patch outside the range' do
+        let(:offense_location) { double :location, first_line: 30, last_line: 41 }
 
         it { expect(messages).to eq([]) }
       end
