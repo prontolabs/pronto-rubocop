@@ -74,6 +74,7 @@ class TooLong
     # Pretend I am a new method that's 32 lines long.
   end
 end
+```
 
 ## RuboCop versions
 
