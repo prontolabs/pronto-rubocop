@@ -4,6 +4,7 @@ require 'pronto'
 require 'rubocop'
 require 'pronto/rubocop/patch_cop'
 require 'pronto/rubocop/offense_line'
+require 'pronto/rubocop/offense_suggestion'
 
 module Pronto
   class Rubocop < Runner
