@@ -3,6 +3,8 @@
 module Pronto
   class Rubocop < Runner
     class OffenseLine
+      DOCS = 'https://docs.rubocop.org/rubocop/cops_%s.html#%s'
+
       def initialize(patch_cop, offense, line)
         @patch_cop = patch_cop
         @offense = offense
@@ -26,81 +28,39 @@ module Pronto
       end
 
       def message_text
-        return offense.message unless suggestion_text
+        return "#{indirect_message}#{offense_message}" unless suggestable?
 
-        "#{offense.message}\n\n```suggestion\n#{suggestion_text}```"
+        "#{offense_message}\n\n#{indirect_suggestion}#{suggestion_text}"
+      end
+
+      def offense_message
+        offense.message.gsub(
+          offense.cop_name, "[#{offense.cop_name}](#{documentation_url})"
+        )
+      end
+
+      def documentation_url
+        format(DOCS, offense.cop_name.split('/').first.downcase, offense.cop_name.downcase.tr('/', ''))
+      end
+
+      def indirect_offense?
+        offense.location.first_line != line.new_lineno
+      end
+
+      def indirect_message
+        INDIRECT_MESSAGE % offense.location.first_line if indirect_offense?
+      end
+
+      def indirect_suggestion
+        INDIRECT_SUGGESTION % offense.location.first_line if indirect_offense?
+      end
+
+      def suggestable?
+        OffenseSuggestion.new(patch_cop, offense, line).suggestable?
       end
 
       def suggestion_text
-        return unless patch_cop.runner.pronto_rubocop_config['suggestions']
-        return if corrections_count.zero?
-        return if corrector.nil?  # possible after optimisation in https://github.com/rubocop/rubocop/pull/11264
-        return if differing_lines_count != corrections_count
-
-        @suggestion_text ||= corrected_lines[offense.line - 1]
-      end
-
-      def corrected_lines
-        @corrected_lines ||= corrector.rewrite.lines
-      end
-
-      def differing_lines_count
-        original_lines.each_with_index.count do |line, index|
-          line != corrected_lines[index]
-        end
-      end
-
-      def original_lines
-        processed_source.lines.join("\n").lines
-      end
-
-      if ::RuboCop::Cop::Team.respond_to?(:mobilize) && ::RuboCop::Cop::Team.public_method_defined?(:investigate)
-        # rubocop >= 0.87.0 has both mobilize and public investigate method
-        MOBILIZE = :mobilize
-        # rubocop 1.30.0 renamed from auto_correct to autocorrect
-        AUTOCORRECT = Gem::Version.new(::RuboCop::Version::STRING) >= Gem::Version.new("1.30.0") ? :autocorrect : :auto_correct
-
-        def report
-          @report ||= autocorrect_team.investigate(processed_source).cop_reports.first
-        end
-
-        def corrector
-          report.corrector
-        end
-
-        def corrections_count
-          # Some lines may contain more than one offense
-          report.offenses.map(&:line).uniq.size
-        end
-      else
-        # rubocop 0.85.x and 0.86.0 have mobilize, older versions don't
-        MOBILIZE = ::RuboCop::Cop::Team.respond_to?(:mobilize) ? :mobilize : :new
-        AUTOCORRECT = :auto_correct
-
-        def corrector
-          @corrector ||= begin
-            autocorrect_team.inspect_file(processed_source)
-            corrector = RuboCop::Cop::Corrector.new(processed_source.buffer)
-            corrector.corrections.concat(autocorrect_team.cops.first.corrections)
-            corrector
-          end
-        end
-
-        def corrections_count
-          @corrections_count ||= corrector.corrections.count
-        end
-      end
-
-      def autocorrect_team
-        @autocorrect_team ||=
-          ::RuboCop::Cop::Team.send(MOBILIZE,
-                                    ::RuboCop::Cop::Registry.new([cop_class]),
-                                    patch_cop.rubocop_config,
-                                    **{ AUTOCORRECT => true, stdin: true })
-      end
-
-      def cop_class
-        patch_cop.registry.find_by_cop_name(offense.cop_name)
+        OffenseSuggestion.new(patch_cop, offense, line).suggestion
       end
 
       def level
@@ -128,6 +88,10 @@ module Pronto
         error: :error,
         fatal: :fatal
       }.freeze
+      SUGGESTION = 'suggestion'
+      RUBY = 'ruby'
+      INDIRECT_MESSAGE = "Offense generated for line %d:\n\n"
+      INDIRECT_SUGGESTION = "Suggestion for line %d:\n\n"
 
       private_constant :DEFAULT_SEVERITIES
     end
