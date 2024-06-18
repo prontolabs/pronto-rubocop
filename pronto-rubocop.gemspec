@@ -14,11 +14,9 @@ Gem::Specification.new do |s|
   s.summary = 'Pronto runner for Rubocop, ruby code analyzer'
 
   s.licenses = ['MIT']
-  s.required_ruby_version = '>= 2.3.0'
-  s.rubygems_version = '1.8.23'
+  s.required_ruby_version = '>= 2.5.0'
 
-  s.files = `git ls-files`.split($RS).reject do |file|
-    file =~ %r{^(?:
+  s.files = `git ls-files`.split($RS).grep_v(%r{^(?:
     spec/.*
     |Gemfile
     |Rakefile
@@ -26,15 +24,10 @@ Gem::Specification.new do |s|
     |\.gitignore
     |\.rubocop.yml
     |\.travis.yml
-    )$}x
-  end
-  s.test_files = []
+    )$}x)
   s.extra_rdoc_files = ['LICENSE', 'README.md']
   s.require_paths = ['lib']
 
   s.add_runtime_dependency('pronto', '~> 0.11.0')
   s.add_runtime_dependency('rubocop', '>= 0.63.1', '< 2.0')
-  s.add_development_dependency('rake', '~> 12.0')
-  s.add_development_dependency('rspec', '~> 3.4')
-  s.add_development_dependency('rspec-its', '~> 1.2')
 end
