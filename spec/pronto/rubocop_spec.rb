@@ -85,6 +85,12 @@ module Pronto
             )
         end
 
+        it_behaves_like(
+          'it include a documentation url', 'Layout/IndentationConsistency', 'layout', 'layoutindentationconsistency'
+        )
+        it_behaves_like 'it include a documentation url', 'Style/StringLiterals', 'style', 'stylestringliterals'
+        it_behaves_like 'it include a documentation url', 'Metrics/MethodLength', 'metrics', 'metricsmethodlength'
+
         context 'with suggestions enabled' do
           let(:config_hash) { { 'rubocop' => { 'suggestions' => true } } }
 
@@ -109,7 +115,7 @@ module Pronto
                   String,
                   a_string_matching('```suggestion'),
                   String,
-                  a_string_matching('```suggestion'),
+                  a_string_matching('```suggestion')
                 ]
               )
           end

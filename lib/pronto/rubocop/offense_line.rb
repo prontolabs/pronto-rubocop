@@ -3,6 +3,8 @@
 module Pronto
   class Rubocop < Runner
     class OffenseLine
+      DOCS = 'https://docs.rubocop.org/rubocop/cops_%s.html#%s'
+
       def initialize(patch_cop, offense, line)
         @patch_cop = patch_cop
         @offense = offense
@@ -26,9 +28,19 @@ module Pronto
       end
 
       def message_text
-        return "#{indirect_message}#{offense.message}" unless suggestable?
+        return "#{indirect_message}#{offense_message}" unless suggestable?
 
-        "#{offense.message}\n\n#{indirect_suggestion}#{suggestion_text}"
+        "#{offense_message}\n\n#{indirect_suggestion}#{suggestion_text}"
+      end
+
+      def offense_message
+        offense.message.gsub(
+          offense.cop_name, "[#{offense.cop_name}](#{documentation_url})"
+        )
+      end
+
+      def documentation_url
+        format(DOCS, offense.cop_name.split('/').first.downcase, offense.cop_name.downcase.tr('/', ''))
       end
 
       def indirect_offense?

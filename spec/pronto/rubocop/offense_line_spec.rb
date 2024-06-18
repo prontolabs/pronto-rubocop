@@ -11,8 +11,9 @@ describe Pronto::Rubocop::OffenseLine do
   let(:offense) do
     instance_double RuboCop::Cop::Offense,
                     severity: severity,
-                    message: 'Fake message',
-                    location: offense_location
+                    message: 'Style/FakeCop: Fake message',
+                    location: offense_location,
+                    cop_name: 'Style/FakeCop'
   end
   let(:offense_location) { double :location, first_line: 42, last_line: 43 }
   let(:line) do
@@ -30,7 +31,7 @@ describe Pronto::Rubocop::OffenseLine do
 
     it { expect(message.path).to eq('example.rb') }
     it { expect(message.line).to eq(line) }
-    it { expect(message.msg).to eq('Fake message') }
+    it { expect(message.msg).to eq('[Style/FakeCop](https://docs.rubocop.org/rubocop/cops_style.html#stylefakecop): Fake message') }
 
     context 'with default severity levels' do
       default_level_hash = {
