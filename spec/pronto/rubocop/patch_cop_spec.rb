@@ -11,7 +11,8 @@ describe Pronto::Rubocop::PatchCop do
   let(:runner) { double :runner }
   let(:ast) { double :ast, each_node: nil }
   let(:processed_source) { double :processed_source, ast: ast }
-  let(:team) { double :team, inspect_file: [offense] }
+  let(:team) { double :team, investigate: offenses }
+  let(:offenses) { double :offenses, offenses: [offense] }
   let(:offense_location) { double :location, first_line: 42, last_line: 43 }
   let(:offense) { double :offense, disabled?: false, location: offense_location }
   let(:offense_line) { double :offense_line, message: 'Err' }
