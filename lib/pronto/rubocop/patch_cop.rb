@@ -33,7 +33,11 @@ module Pronto
       def registry
         @registry ||= ::RuboCop::Cop::Registry.new(
           # keep support of older Rubocop versions
-          RuboCop::Cop.const_defined?(:Registry) ? RuboCop::Cop::Registry.all : RuboCop::Cop::Cop.all
+          if RuboCop::Cop.const_defined?(:Registry) && RuboCop::Cop::Registry.respond_to?(:all)
+            RuboCop::Cop::Registry.all
+          else
+            RuboCop::Cop::Cop.all
+          end
         )
       end
 
