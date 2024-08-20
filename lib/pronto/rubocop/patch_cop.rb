@@ -31,7 +31,7 @@ module Pronto
       end
 
       def registry
-        @registry ||= ::RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
+        @registry ||= ::RuboCop::Cop::Registry.new(all_cops)
       end
 
       def rubocop_config
@@ -46,6 +46,15 @@ module Pronto
 
       attr_reader :patch
 
+      def all_cops
+        # keep support of older Rubocop versions
+        if RuboCop::Cop.const_defined?(:Registry) && RuboCop::Cop::Registry.respond_to?(:all)
+          RuboCop::Cop::Registry.all
+        else
+          RuboCop::Cop::Cop.all
+        end
+      end
+
       def valid?
         return false if rubocop_config.file_to_exclude?(path)
         return true if rubocop_config.file_to_include?(path)
@@ -58,8 +67,14 @@ module Pronto
       end
 
       def offenses
-        team
-          .inspect_file(processed_source)
+        # keep support of older Rubocop versions
+        if team.respond_to?(:investigate)
+          offenses = team.investigate(processed_source).offenses
+        else
+          offenses = team.inspect_file(processed_source)
+        end
+
+        offenses
           .sort
           .reject(&:disabled?)
       end
