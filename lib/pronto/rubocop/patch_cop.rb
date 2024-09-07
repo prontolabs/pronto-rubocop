@@ -71,7 +71,7 @@ module Pronto
         if team.respond_to?(:investigate)
           offenses = team.investigate(processed_source).offenses
         else
-          offenses = team.inspect_file(processed_source)
+          offenses = team.investigate(processed_source)
         end
 
         offenses
