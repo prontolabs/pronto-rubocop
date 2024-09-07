@@ -79,7 +79,11 @@ module Pronto
 
         def corrector
           @corrector ||= begin
-            autocorrect_team.investigate(processed_source)
+            if autocorrect_team.respond_to?(:investigate)
+              autocorrect_team.investigate(processed_source)
+            else
+              autocorrect_team.inspect_file(processed_source)
+            end
             corrector = RuboCop::Cop::Corrector.new(processed_source.buffer)
             corrector.corrections.concat(autocorrect_team.cops.first.corrections)
             corrector
