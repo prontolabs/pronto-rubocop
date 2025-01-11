@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   push:
-    if: github.repository == 'prontolabs/pronto-fasterer'
+    if: github.repository == 'prontolabs/pronto-rubocop'
     runs-on: ubuntu-latest
 
     permissions:
