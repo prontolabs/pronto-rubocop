@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.author = 'Mindaugas Mozūras'
   s.email = 'mindaugas.mozuras@gmail.com'
-  s.homepage = 'http://github.com/mmozuras/pronto-rubocop'
+  s.homepage = 'https://github.com/prontolabs/pronto-rubocop'
   s.summary = 'Pronto runner for Rubocop, ruby code analyzer'
 
   s.licenses = ['MIT']
