@@ -10,12 +10,11 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.author = 'Mindaugas Mozūras'
   s.email = 'mindaugas.mozuras@gmail.com'
-  s.homepage = 'http://github.com/mmozuras/pronto-rubocop'
+  s.homepage = 'https://github.com/prontolabs/pronto-rubocop'
   s.summary = 'Pronto runner for Rubocop, ruby code analyzer'
 
   s.licenses = ['MIT']
   s.required_ruby_version = '>= 2.3.0'
-  s.rubygems_version = '1.8.23'
 
   s.files = `git ls-files`.split($RS).reject do |file|
     file =~ %r{^(?:
