@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.summary = 'Pronto runner for Rubocop, ruby code analyzer'
 
   s.licenses = ['MIT']
-  s.required_ruby_version = '>= 2.5.0'
+  s.required_ruby_version = '>= 2.3.0'
 
   s.files = `git ls-files`.split($RS).grep_v(%r{^(?:
     spec/.*
