@@ -12,6 +12,4 @@ group :development, :test do
   gem 'rspec', '~> 3.4'
   gem 'rspec-its', '~> 1.3'
   gem 'rubocop'
-
-  gem 'byebug'
 end
