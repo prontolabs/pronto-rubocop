@@ -8,6 +8,7 @@ local_gemfile = File.expand_path('Gemfile.local', __dir__)
 eval_gemfile local_gemfile if File.exist?(local_gemfile)
 
 group :development, :test do
+  gem 'base64', '~> 0.1.2'
   gem 'rake', '~> 12.0'
   gem 'rspec', '~> 3.4'
   gem 'rspec-its', '~> 1.3'
