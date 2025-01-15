@@ -48,11 +48,11 @@ module Pronto
       end
 
       def indirect_message
-        INDIRECT_MESSAGE % offense.location.first_line if indirect_offense?
+        "Offense generated for line #{offense.location.first_line}:\n\n" if indirect_offense?
       end
 
       def indirect_suggestion
-        INDIRECT_SUGGESTION % offense.location.first_line if indirect_offense?
+        "Suggestion for line #{offense.location.first_line}:\n\n" if indirect_offense?
       end
 
       def suggestable?
@@ -88,10 +88,6 @@ module Pronto
         error: :error,
         fatal: :fatal
       }.freeze
-      SUGGESTION = 'suggestion'
-      RUBY = 'ruby'
-      INDIRECT_MESSAGE = "Offense generated for line %d:\n\n"
-      INDIRECT_SUGGESTION = "Suggestion for line %d:\n\n"
 
       private_constant :DEFAULT_SEVERITIES
     end
