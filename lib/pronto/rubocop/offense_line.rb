@@ -3,8 +3,6 @@
 module Pronto
   class Rubocop < Runner
     class OffenseLine
-      DOCS = 'https://docs.rubocop.org/rubocop/cops_%s.html#%s'
-
       def initialize(patch_cop, offense, line)
         @patch_cop = patch_cop
         @offense = offense
@@ -34,13 +32,17 @@ module Pronto
       end
 
       def offense_message
-        offense.message.gsub(
-          offense.cop_name, "[#{offense.cop_name}](#{documentation_url})"
-        )
+        if documentation_url
+          offense.message.gsub(
+            offense.cop_name, "[#{offense.cop_name}](#{documentation_url})"
+          )
+        else
+          offense.message
+        end
       end
 
       def documentation_url
-        format(DOCS, offense.cop_name.split('/').first.downcase, offense.cop_name.downcase.tr('/', ''))
+        patch_cop.registry.find_by_cop_name(offense.cop_name)&.documentation_url
       end
 
       def indirect_offense?
