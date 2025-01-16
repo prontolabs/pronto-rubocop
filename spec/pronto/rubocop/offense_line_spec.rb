@@ -4,16 +4,25 @@ require 'spec_helper'
 
 describe Pronto::Rubocop::OffenseLine do
   let(:offense_line) { described_class.new(patch_cop, offense, line) }
-  let(:patch_cop) { instance_double Pronto::Rubocop::PatchCop, runner: runner }
+  let(:patch_cop) { instance_double Pronto::Rubocop::PatchCop, runner: runner, registry: registry }
+  let(:registry) do
+    RuboCop::Cop::Registry.new(
+      if RuboCop::Cop.const_defined?(:Registry) && RuboCop::Cop::Registry.respond_to?(:all)
+        RuboCop::Cop::Registry.all
+      else
+        RuboCop::Cop::Cop.all
+      end
+    )
+  end
   let(:runner) do
     instance_double Pronto::Rubocop, pronto_rubocop_config: config
   end
   let(:offense) do
     instance_double RuboCop::Cop::Offense,
                     severity: severity,
-                    message: 'Style/FakeCop: Fake message',
+                    message: 'Layout/IndentationConsistency: Fake message',
                     location: offense_location,
-                    cop_name: 'Style/FakeCop'
+                    cop_name: 'Layout/IndentationConsistency'
   end
   let(:offense_location) { double :location, first_line: 42, last_line: 43 }
   let(:line) do
@@ -27,11 +36,23 @@ describe Pronto::Rubocop::OffenseLine do
   let(:config) { {} }
 
   describe '#message' do
-    let(:message) { offense_line.message }
+    subject(:message) { offense_line.message }
 
-    it { expect(message.path).to eq('example.rb') }
-    it { expect(message.line).to eq(line) }
-    it { expect(message.msg).to eq('[Style/FakeCop](https://docs.rubocop.org/rubocop/cops_style.html#stylefakecop): Fake message') }
+    its(:path) { is_expected.to eq('example.rb') }
+    its(:line) { is_expected.to eq(line) }
+    its(:msg) { is_expected.to eq('[Layout/IndentationConsistency](https://docs.rubocop.org/rubocop/cops_layout.html#layoutindentationconsistency): Fake message') }
+
+    context 'when the documentation URL is not available' do
+      let(:offense) do
+        instance_double RuboCop::Cop::Offense,
+                        severity: severity,
+                        message: 'Fake/FakeOffense: Fake message',
+                        location: offense_location,
+                        cop_name: 'Fake/FakeOffense'
+      end
+
+      its(:msg) { is_expected.to eq('Fake/FakeOffense: Fake message') }
+    end
 
     context 'with default severity levels' do
       default_level_hash = {
@@ -45,9 +66,7 @@ describe Pronto::Rubocop::OffenseLine do
         context "when severity is #{given_severity}" do
           let(:severity_name) { given_severity }
 
-          it "has a #{expected_level} level" do
-            expect(message.level).to eq(expected_level)
-          end
+          its(:level) { is_expected.to eq(expected_level) }
         end
       end
     end
@@ -64,9 +83,7 @@ describe Pronto::Rubocop::OffenseLine do
         context "when severity is #{given_severity.inspect}" do
           let(:severity_name) { given_severity }
 
-          it 'has the overridden level' do
-            expect(message.level).to eq(:fatal)
-          end
+          its(:level) { is_expected.to eq(:fatal) }
         end
       end
     end
@@ -74,9 +91,7 @@ describe Pronto::Rubocop::OffenseLine do
     context 'when the offense is indirectly related to the new code' do
       let(:offense_location) { double :location, first_line: 40, last_line: 41 }
 
-      it 'includes the indirect message' do
-        expect(message.msg).to include('Offense generated for line 40:')
-      end
+      its(:msg) { is_expected.to include('Offense generated for line 40:') }
     end
   end
 end
