@@ -11,7 +11,6 @@ analyzer. [What is Pronto?](https://github.com/prontolabs/pronto)
 - [Usage](#usage)
 - [Suggestions](#suggestions)
 - [Only patched lines](#only-patched-lines)
-- [RuboCop versions](#rubocop-versions)
 
 ## Configuration
 
@@ -75,17 +74,3 @@ class TooLong
   end
 end
 ```
-
-## RuboCop versions
-
-If you need to use RuboCop v0.84.0 or v0.85.x, you'll need to ensure that
-you've also added `gem 'rubocop-ast', '< 0.7.0'` to your Gemfile as
-these were the first versions to use rubocop-ast, and unfortunately the
-dependency was loose enough that rubocop-ast versions >= 0.7.0 were allowed,
-which causes `require 'rubocop'` to fail with
-```
-  NoMethodError:
-    undefined method `join' for #<Set: {:==, :===, :!=, :<=, :>=, :>, :<}>
-  in rubocop-0.84.0/lib/rubocop/cop/style/redundant_conditional.rb:57:in `<class:RedundantConditional>'
-```
-This is due to https://github.com/rubocop-hq/rubocop-ast/issues/22
