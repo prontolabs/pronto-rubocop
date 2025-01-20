@@ -89,7 +89,6 @@ module Pronto
           :auto_correct
         end
 
-      # rubocop >= 0.87.0 has investigate as a public method
       def report
         @report ||= autocorrect_team.investigate(processed_source).cop_reports.first
       end
@@ -103,7 +102,6 @@ module Pronto
         report.offenses.map(&:line).uniq.size
       end
 
-      # rubocop >= 0.87.0 has mobilize as a public method
       def autocorrect_team
         @autocorrect_team ||= ::RuboCop::Cop::Team.mobilize(
           ::RuboCop::Cop::Registry.new([cop_class]),
