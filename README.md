@@ -7,6 +7,11 @@
 Pronto runner for [RuboCop](https://github.com/bbatsov/rubocop), ruby code
 analyzer. [What is Pronto?](https://github.com/prontolabs/pronto)
 
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Suggestions](#suggestions)
+- [Only patched lines](#only-patched-lines)
+
 ## Configuration
 
 Configuring RuboCop via `.rubocop.yml` will work just fine with
@@ -26,6 +31,12 @@ rubocop:
 
   # Enable suggestions
   suggestions: true
+
+  # Only report warnings on added/modified lines of code
+  # You can provide a number for a range to catch warnings on lines that were not modified
+  only_patched_lines:
+    enabled: false # default
+    range: 0 # default
 ```
 
 ## Suggestions
@@ -39,16 +50,27 @@ For example:
 
 ![GitHub screenshot with suggestion](https://user-images.githubusercontent.com/132/50402757-1bd75b80-0799-11e9-809f-8b8a23ed33f6.png)
 
-## RuboCop versions
+## Only patched lines
 
-If you need to use RuboCop v0.84.0 or v0.85.x, you'll need to ensure that
-you've also need to add `gem 'rubocop-ast', '< 0.7.0'` to your Gemfile as
-these were the first versions to use rubocop-ast, and unfortunately the
-dependency was loose enough that rubocop-ast versions >= 0.7.0 were allowed,
-which causes `require 'rubocop'` to fail with
+When `only_patched_lines` is enabled, Rubocop warnings that start outside of the patched code will be ignored.
+For example, if you add a method to a class with too many lines, the warning at the class level will not apply.
+
+This can be useful for legacy applications with a lot of RuboCop warnings, where you want to focus on the new code.
+
+When increasing the range, you will also catch warnings on lines that were not modified but are within the range of the modified lines.
+
+For example, if you set `range: 1`, you will catch warnings starting before the patched lines, but only if they are within 1 line.
+
+```ruby
+# With `only_patched_lines` enabled and a default range of 1, the Metrics/ClassLength warning is not included in the results.
+# However, when `range` is increased to 10, now Metrics/ClassLength will be included alongside the Metrics/MethodLength warning for the `too_long` method.
+class TooLong
+  def just_fine
+    "I'm doing just fine, how about you?"
+  end
+
+  def too_long
+    # Pretend I am a new method that's 32 lines long.
+  end
+end
 ```
-  NoMethodError:
-    undefined method `join' for #<Set: {:==, :===, :!=, :<=, :>=, :>, :<}>
-  in rubocop-0.84.0/lib/rubocop/cop/style/redundant_conditional.rb:57:in `<class:RedundantConditional>'
-```
-This is due to https://github.com/rubocop-hq/rubocop-ast/issues/22
