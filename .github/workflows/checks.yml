@@ -36,7 +36,7 @@ jobs:
             rubocop: '1.38.0'
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: use specific rubocop version
       run: echo "gem 'rubocop', '${{ matrix.rubocop }}'" > Gemfile.local
     - name: use specific rubocop-ast version (if required)
